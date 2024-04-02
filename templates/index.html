@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body {
+            /*background: linear-gradient(to right, #FFD1DC, #FFC0CB, #FFB6C1, #FF69B4);*/ /* Gradient background from left to right */
+            background-image:url(../static/images/new.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+        
+            font-family: 'Roboto', sans-serif; /* or any other desired font */
+        }
+        
+        
+        
+
+        /* Styling for the checkbox */
+        .checkbox {
+            margin-right: 10px; /* Adjust spacing between checkbox and task text */
+        }
+
+        /* Styling for the list items */
+        ul {
+            list-style: none; /* Remove default list styles */
+            padding: 0; /* Remove default padding */
+        }
+
+        ul li {
+            display: flex; /* Use flexbox to align items horizontally */
+            align-items: center; /* Center items vertically */
+            margin-bottom: 5px; /* Adjust spacing between list items */
+        }
+        .head {
+            background-color: blue;
+            color: black;
+            width: 1600px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-left:15%;
+            margin-right:15%;
+            margin-top:0px;
+            border-radius: 20px;
+            font-size:30px;
+        }
+        
+        h1 {
+            margin-bottom: 20px; /* Adjust as needed */
+        }
+        .task{
+            text-align:center;
+            font-size:20px;
+        }
+        #Task{
+            width: 200px;
+            height: 40px; 
+            font-size: 20px;
+            background-color:smokywhite;
+             
+        }
+        select {
+            width: 200px; /* Adjust the width as needed */
+            height: 40px; /* Adjust the height as needed */
+            font-size: 20px; /* Adjust the font size as needed */
+            background-color:skyblue;
+        }
+        .add{
+            font-size: 15px;
+            width: 150px;
+            height: 40px; 
+            font-size: 20px;
+            background-color:cyan;
+        }
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .edit-form input[type="text"] {
+            margin-bottom: 10px;
+        }
+        .edit-form button {
+            width: 100px;
+            height: 40px;
+            font-size: 20px;
+        }
+        .icon {
+            margin-right: 15px; /* Adjust spacing between icons */
+        }
+        .main {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center items horizontally */
+            justify-content: center; /* Center items vertically */
+        }
+        
+        
+    </style>
+</head>
+<body>
+    <img src="/static/image/new.jpg" alt="Description of image">
+
+    <div class="head">
+        <h1>To-Do List</h1>
+    </div>
+
+    <div class="task">
+        <h2>Add Task</h2>
+        <form action="/add" method="post">
+            <input type="text" name="task" id="Task" placeholder="Task">
+            <select name="category">
+                <option value="category">Choose category</option>
+                <option value="personal">Personal</option>
+                <option value="family">Family</option>
+                <option value="work_or_school">Work or School</option>
+            </select>
+            <button type="submit" class="add"><i class="fa fa-plus"></i></button>
+        </form>
+    </div>
+    
+    <div class="main">
+        <h2>Personal</h2>
+        <ul>
+            {% for task in tasks['personal'] %}
+                {% set done_class = 'done' if 'DONE' in task else '' %}
+                <li class="{{ done_class }}">
+                    <input type="checkbox" class="checkbox"> <!-- Add checkbox input -->
+                    {{ task }}
+                    <a href="/done/personal/{{ loop.index0 }}"><i class="fa fa-check fa-2x icon"></i></a>
+                    <a href="/delete/personal/{{ loop.index0 }}"><i class="fa fa-trash fa-2x icon"></i></a>
+                    <a href="#" onclick="showEditForm('{{ task }}', 'personal', {{ loop.index0 }})"><i class="fa fa-edit fa-2x icon"></i></a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h2>Family</h2>
+        <ul>
+            {% for task in tasks['family'] %}
+                {% set done_class = 'done' if 'DONE' in task else '' %}
+                <li class="{{ done_class }}">
+                    <input type="checkbox" class="checkbox"> <!-- Add checkbox input -->
+                    {{ task }}
+                    <a href="/done/family/{{ loop.index0 }}"><i class="fa fa-check fa-2x icon"></i></a>
+                    <a href="/delete/family/{{ loop.index0 }}"><i class="fa fa-trash fa-2x icon"></i></a>
+                    <a href="#" onclick="showEditForm('{{ task }}', 'family', {{ loop.index0 }})"><i class="fa fa-edit fa-2x icon"></i></a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <h2>Work or School</h2>
+        <ul>
+            {% for task in tasks['work_or_school'] %}
+                {% set done_class = 'done' if 'DONE' in task else '' %}
+                <li class="{{ done_class }}">
+                    <input type="checkbox" class="checkbox"> <!-- Add checkbox input -->
+                    {{ task }}
+                    <a href="/done/work_or_school/{{ loop.index0 }}"><i class="fa fa-check fa-2x icon"></i></a>
+                    <a href="/delete/work_or_school/{{ loop.index0 }}"><i class="fa fa-trash fa-2x icon"></i></a>
+                    <a href="#" onclick="showEditForm('{{ task }}', 'work_or_school', {{ loop.index0 }})"><i class="fa fa-edit fa-2x icon"></i></a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div id="editForm" class="edit-form" style="display: none;">
+        <h2>Edit Task</h2>
+        <form id="editTaskForm" action="" method="post">
+            <input type="text" id="editedTask" name="editedTask" placeholder="Edited Task">
+            <input type="hidden" id="editedCategory" name="editedCategory">
+            <input type="hidden" id="editedIndex" name="editedIndex">
+            <button type="button" onclick="submitEditForm()">Save</button>
+        </form>
+    </div>
+
+    <script>
+        function showEditForm(task, category, index) {
+            document.getElementById('editedTask').value = task;
+            document.getElementById('editedCategory').value = category;
+            document.getElementById('editedIndex').value = index;
+            document.getElementById('editForm').style.display = 'block';
+        }
+
+        function submitEditForm() {
+            document.getElementById('editTaskForm').action = "/edit/" + document.getElementById('editedCategory').value + "/" + document.getElementById('editedIndex').value;
+            document.getElementById('editTaskForm').submit();
+        }
+    </script>
+</div>
+</body>
+</html>
